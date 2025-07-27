@@ -4,27 +4,27 @@ const dotenv = require('dotenv');
 const dbConnect = require('./config/db');
 
 const app = express();
-
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB
+
 dbConnect();
 
-// Enable CORS for specific origins (localhost + Vercel frontend)
+
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://crud-front-end-tan.vercel.app']
+  origin: ['http://localhost:5173', 'https://crud-front-end-tan.vercel.app'],
+  credentials: true
 }));
 
-// Middleware to parse JSON request bodies
+// Middleware
 app.use(express.json());
 
-// Use your routes
+// Routes
 const dataRoutes = require('./routes/data');
-app.use(dataRoutes);
+app.use('/api', dataRoutes); // optional to prefix with /api
 
-// Start the server
+// Server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-    console.log(`Server Up on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
