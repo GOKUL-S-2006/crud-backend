@@ -1,49 +1,47 @@
 const express = require('express');
 const router = express.Router();
-const Data=require('../models/Data');//Importing Model to acces database
+const Data = require('../models/Data'); // Importing Model to access database
 
-router
-  .get('/api/display', async (req, res) => {
-    try{
-      const data=await  Data.find();
-      res.json(data);
-    }catch(err){
-     res.status(500).json({ error: err.message });
-    }
-   
-  })
-  .get('/api/display/:id', async (req, res) => {
-    try{
-    const id=req.params.id;
-    const single_Data=await Data.findById(id);
-    
+
+router.get('/display', async (req, res) => {
+  try {
+    const data = await Data.find();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+router.get('/display/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const single_Data = await Data.findById(id);
+
     if (!single_Data) {
       return res.status(404).json({ message: "Data not found" });
     }
+
     res.json(single_Data);
-    }
-    catch(err){
-      res.status(500).json({error:err.message});
-    }
-    
-  })
-  .post('/api/create',async (req, res) => {
-    try{
-     const {id,title,content}=req.body;
-     const newData=Data.create({id,title,content});
-      res.status(201).json({ message: 'Created', data: newData });
-    }
-    catch(err){
-      res.status(500).json({error:err.message});
-    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 
-  })
-  .delete('/api/delete/:id',async (req, res) => {
-    try {
+router.post('/create', async (req, res) => {
+  try {
+    const { id, title, content } = req.body;
+    const newData = await Data.create({ id, title, content });
+    res.status(201).json({ message: 'Created', data: newData });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/delete/:id', async (req, res) => {
+  try {
     const id = req.params.id;
-
-    // This matches your custom 'id' field, not MongoDB's '_id'
     const deleted = await Data.findOneAndDelete({ id });
 
     if (!deleted) {
@@ -54,14 +52,15 @@ router
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-  })
-  .patch('/api/modify/:id', async (req, res) => {
+});
 
-    try {
+
+router.patch('/modify/:id', async (req, res) => {
+  try {
     const updated = await Data.findOneAndUpdate(
-      { id: req.params.id },   // Find by custom 'id'
-      req.body,                // Update with data from request body
-      { new: true }            // Return the updated document
+      { id: req.params.id },
+      req.body,
+      { new: true }
     );
 
     if (!updated) {
@@ -72,7 +71,6 @@ router
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
-    
 });
 
 module.exports = router;
